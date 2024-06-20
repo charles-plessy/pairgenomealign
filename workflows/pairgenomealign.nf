@@ -55,8 +55,10 @@ workflow PAIRGENOMEALIGN {
     ch_multiqc_files = ch_multiqc_files.mix(ASSEMBLYSCAN.out.json.collect{it[1]})
     ch_versions = ch_versions.mix(ASSEMBLYSCAN.out.versions.first())
 
-    // Prefix id with target genome name before producing alignment files
+    // Prefix query ids with target genome name before producing alignment files
     ch_samplesheet = ch_samplesheet
+        .map { row -> [ [id: params.targetName + '___' + row[0].id] , row.tail() ] }
+    ch_seqtk_cutn_query = SEQTK_CUTN_QUERY.out.bed
         .map { row -> [ [id: params.targetName + '___' + row[0].id] , row.tail() ] }
 
     //
@@ -65,7 +67,9 @@ workflow PAIRGENOMEALIGN {
     if (!(params.m2m)) {
     PAIRALIGN_M2O (
         ch_targetgenome,
-        ch_samplesheet
+        ch_samplesheet,
+        SEQTK_CUTN_TARGET.out.bed,
+        ch_seqtk_cutn_query
     )
     } else {
 
@@ -74,7 +78,9 @@ workflow PAIRGENOMEALIGN {
     //
     PAIRALIGN_M2M (
         ch_targetgenome,
-        ch_samplesheet
+        ch_samplesheet,
+        SEQTK_CUTN_TARGET.out.bed,
+        ch_seqtk_cutn_query
     )
     }
 

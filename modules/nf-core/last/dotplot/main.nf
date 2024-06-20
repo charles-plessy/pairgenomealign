@@ -8,8 +8,9 @@ process LAST_DOTPLOT {
         'biocontainers/last:1542--h43eeafb_1' }"
 
     input:
-    tuple val(meta), path(maf)
+    tuple val(meta), path(maf), path(queryAnnot)
     val(format)
+    path(targetAnnot)
 
     output:
     tuple val(meta), path("*.gif"), optional:true, emit: gif
@@ -22,9 +23,12 @@ process LAST_DOTPLOT {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def bed1arg = targetAnnot ? "--bed1 ${targetAnnot}" : ""
+    def bed2arg =  queryAnnot ? "--bed2  ${queryAnnot}" : ""
     """
     last-dotplot \\
         $args \\
+        $bed1arg $bed2arg \\
         $maf \\
         $prefix.$format
 

@@ -13,3 +13,13 @@ report_section_order:
 export_plots: true
 
 disable_version_detection: true
+
+custom_data:
+  last_o2o:
+    file_format: "tsv"
+    section_name: "Alignment statistics"
+    plot_type: "table"
+
+sp:
+  last_o2o:
+    fn: "*m2o_aln_mqc.tsv"

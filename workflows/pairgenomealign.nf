@@ -67,6 +67,7 @@ workflow PAIRGENOMEALIGN {
         ch_targetgenome,
         ch_samplesheet
     )
+    pairalign_out = PAIRALIGN_M2O.out
     } else {
 
     //
@@ -76,7 +77,10 @@ workflow PAIRGENOMEALIGN {
         ch_targetgenome,
         ch_samplesheet
     )
+    pairalign_out = PAIRALIGN_M2M.out
     }
+
+    ch_multiqc_files = ch_multiqc_files.mix(pairalign_out.multiqc.collect{it[1]})
 
     // Collate and save software versions
     //

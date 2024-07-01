@@ -5,6 +5,7 @@
 */
 
 include { ASSEMBLYSCAN           } from '../modules/nf-core/assemblyscan/main'
+include { CUSTOMMODULE           } from '../modules/local/custommodule.nf'
 include { PAIRALIGN_M2M          } from '../subworkflows/local/pairalign_m2m/main'
 include { SEQTK_CUTN as SEQTK_CUTN_TARGET  } from '../modules/nf-core/seqtk/cutn/main'
 include { SEQTK_CUTN as SEQTK_CUTN_QUERY  } from '../modules/nf-core/seqtk/cutn/main'
@@ -53,7 +54,15 @@ workflow PAIRGENOMEALIGN {
     ASSEMBLYSCAN (
         ch_samplesheet
     )
-    ch_multiqc_files = ch_multiqc_files.mix(ASSEMBLYSCAN.out.json.collect{it[1]})
+
+    //
+    // MODULE: CUSTOMMODULE
+    //
+    CUSTOMMODULE (
+        ASSEMBLYSCAN.out.json.collect{it[1]}
+    )
+
+    ch_multiqc_files = ch_multiqc_files.mix(CUSTOMMODULE.out.tsv)
     ch_versions = ch_versions.mix(ASSEMBLYSCAN.out.versions.first())
 
     // Prefix query ids with target genome name before producing alignment files
@@ -72,6 +81,7 @@ workflow PAIRGENOMEALIGN {
         SEQTK_CUTN_TARGET.out.bed,
         ch_seqtk_cutn_query
     )
+    ch_train = PAIRALIGN_M2O.out.multiqc
     } else {
 
     //
@@ -83,8 +93,9 @@ workflow PAIRGENOMEALIGN {
         SEQTK_CUTN_TARGET.out.bed,
         ch_seqtk_cutn_query
     )
+    ch_train = PAIRALIGN_M2M.out.multiqc
     }
-
+    ch_multiqc_files = ch_multiqc_files.mix(ch_train.collect{it[1]})
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)

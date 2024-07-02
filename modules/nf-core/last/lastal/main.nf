@@ -13,7 +13,7 @@ process LAST_LASTAL {
 
     output:
     tuple val(meta), path("*.maf.gz"), emit: maf
-    tuple val(meta), path("*_mqc.tsv"),emit: multiqc
+    tuple val(meta), path("*aln.tsv") ,emit: multiqc
     path "versions.yml"              , emit: versions
 
     when:
@@ -52,7 +52,7 @@ process LAST_LASTAL {
         $fastx |
 	tee >(gzip --no-name  > ${prefix}.maf.gz) |
 	maf-convert psl |
-	calculate_psl_metrics > ${prefix}_mqc.tsv
+	calculate_psl_metrics > ${prefix}.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -67,7 +67,7 @@ process LAST_LASTAL {
     """
     INDEX_NAME=STUB
     echo stub | gzip --no-name > ${prefix}.\$INDEX_NAME.maf.gz
-    touch ${prefix}_mqc.tsv
+    touch ${prefix}.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

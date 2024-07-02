@@ -12,7 +12,7 @@ process LAST_SPLIT {
 
     output:
     tuple val(meta), path("*.maf.gz"), emit: maf
-    tuple val(meta), path("*_mqc.tsv"),emit: multiqc
+    tuple val(meta), path("*aln.tsv"), emit: multiqc
     path "versions.yml"              , emit: versions
 
     when:
@@ -46,7 +46,7 @@ process LAST_SPLIT {
       last-split $args |
        tee >(gzip --no-name  > ${prefix}.maf.gz) |
        maf-convert psl |
-       calculate_psl_metrics > ${prefix}_mqc.tsv
+       calculate_psl_metrics > ${prefix}.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -60,7 +60,7 @@ process LAST_SPLIT {
     if( "$maf" == "${prefix}.maf.gz" ) error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
     echo stub | gzip --no-name > ${prefix}.maf.gz
-    touch ${prefix}_mqc.tsv
+    touch ${prefix}.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

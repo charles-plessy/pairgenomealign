@@ -22,4 +22,4 @@ custom_data:
 
 sp:
   last_o2o:
-    fn: "*m2o_aln_mqc.tsv"
+    fn: "*o2o_aln.tsv"

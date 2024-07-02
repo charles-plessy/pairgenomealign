@@ -52,7 +52,6 @@ workflow PAIRGENOMEALIGN {
     ASSEMBLYSCAN (
         ch_samplesheet
     )
-    ch_multiqc_files = ch_multiqc_files.mix(ASSEMBLYSCAN.out.json.collect{it[1]})
     ch_versions = ch_versions.mix(ASSEMBLYSCAN.out.versions.first())
 
     // Prefix id with target genome name before producing alignment files
